@@ -1,0 +1,10 @@
+com\gop\lfg\utils\UserCreationRequest.class
+com\gop\lfg\exceptions\CustomNotFoundException.class
+com\gop\lfg\controllers\UserController.class
+com\gop\lfg\exceptions\CustomBadRequestException.class
+com\gop\lfg\utils\CorsFilter.class
+com\gop\lfg\LfgApplication.class
+com\gop\lfg\data\repositories\UserRepository.class
+com\gop\lfg\exceptions\ErrorMessage.class
+com\gop\lfg\services\UserService.class
+com\gop\lfg\data\models\User.class
