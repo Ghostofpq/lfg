@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TokenService tokenService;
 
     @PostConstruct
     private void init() {
