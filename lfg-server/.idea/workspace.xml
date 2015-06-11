@@ -2,26 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b4403c29-33d8-4110-a1ef-7868dfb0017d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/CustomAuthentication.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/CustomAuthenticationFilter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/CustomAuthenticationManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/controllers/TokenController.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/utils/TokenRefreshRequest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/utils/TokenRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/security/CustomAuthenticationProvider.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/security/CustomAuthenticationProvider.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/security/SecurityAspect.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/security/SecurityAspect.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/config/SecurityConfig.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/config/SecurityConfig.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/data/models/User.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/data/models/User.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/controllers/UserController.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/controllers/UserController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/gop/lfg/services/UserService.class" afterPath="$PROJECT_DIR$/target/classes/com/gop/lfg/services/UserService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/CustomAuthenticationProvider.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/CustomAuthenticationProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/SecurityAspect.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/security/SecurityAspect.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/config/SecurityConfig.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/config/SecurityConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/models/Token.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/models/Token.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/repositories/TokenRepository.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/repositories/TokenRepository.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/services/TokenService.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/services/TokenService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/models/User.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/data/models/User.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/gop/lfg/controllers/UserController.java" afterPath="$PROJECT_DIR$/src/main/java/com/gop/lfg/controllers/UserController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../.gitignore" afterPath="$PROJECT_DIR$/../.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="lfg.iws" />
@@ -71,8 +52,8 @@
       <file leaf-file-name="TokenController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/gop/lfg/controllers/TokenController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.39658445">
-              <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
+            <state vertical-scroll-proportion="0.62239087">
+              <caret line="48" column="46" selection-start-line="48" selection-start-column="46" selection-end-line="48" selection-end-column="46" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -1061,7 +1042,7 @@
       <workItem from="1433512823736" duration="267000" />
       <workItem from="1433839673365" duration="4311000" />
       <workItem from="1433921544860" duration="5650000" />
-      <workItem from="1434009812130" duration="10201000" />
+      <workItem from="1434009812130" duration="10830000" />
     </task>
     <task id="LOCAL-00001" summary="ajout du token repo">
       <created>1433950874387</created>
@@ -1069,11 +1050,17 @@
       <option name="project" value="LOCAL" />
       <updated>1433950874387</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="token ok">
+      <created>1434030207666</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1434030207666</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27873000" />
+    <option name="totallyTimeSpent" value="28502000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1119,7 +1106,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ajout du token repo" />
-    <option name="LAST_COMMIT_MESSAGE" value="ajout du token repo" />
+    <MESSAGE value="token ok" />
+    <option name="LAST_COMMIT_MESSAGE" value="token ok" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1601,8 +1589,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/gop/lfg/controllers/TokenController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39658445">
-          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
+        <state vertical-scroll-proportion="0.62239087">
+          <caret line="48" column="46" selection-start-line="48" selection-start-column="46" selection-end-line="48" selection-end-column="46" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
