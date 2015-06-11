@@ -26,7 +26,7 @@ public class Token {
 
     public Token(String userId) {
         final Random randomSeed = new SecureRandom();
-        this.accessToken = new BigInteger(130, randomSeed).toString(32);
+        this.accessToken = new BigInteger(130, randomSeed).toString(64);
         this.tokenRefresh = new BigInteger(130, randomSeed).toString(32);
 
         this.userId = userId;
