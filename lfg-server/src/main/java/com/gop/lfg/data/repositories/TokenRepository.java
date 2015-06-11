@@ -7,4 +7,5 @@ import org.springframework.stereotype.Component;
 
 @Component("TokenRepository")
 public interface TokenRepository extends PagingAndSortingRepository<Token, String> {
+    Token findByAccessToken(final String accessToken);
 }

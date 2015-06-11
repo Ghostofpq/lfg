@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
  * @author GhostOfPQ
  */
 @Slf4j
-@Component("authenticationProvider")
+//@Component("authenticationProvider")
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserService userService;

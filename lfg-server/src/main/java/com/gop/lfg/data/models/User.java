@@ -19,8 +19,14 @@ public class User {
     public final static String FIELD_PASSWORD = "password";
     public final static String FIELD_EMAIL = "email";
 
+    public final static String ROLE_USER = "user";
+    public final static String ROLE_ADMIN = "admin";
+
+
     public User() {
         tokens = new HashMap<>();
+        roles = new HashSet<>();
+        roles.add(ROLE_USER);
     }
 
     @Id
@@ -38,7 +44,9 @@ public class User {
     private long creationTs;
     private long updateTs;
 
-    private Map<String,String> tokens;
+    private Set<String> roles;
+
+    private Map<String, String> tokens;
 
     public void setPassword(String password) {
         final Random r = new SecureRandom();

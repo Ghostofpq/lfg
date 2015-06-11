@@ -4,12 +4,15 @@ import com.gop.lfg.data.models.User;
 import com.gop.lfg.exceptions.CustomBadRequestException;
 import com.gop.lfg.exceptions.CustomNotFoundException;
 import com.gop.lfg.exceptions.ErrorMessage;
+import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import com.gop.lfg.utils.UserCreationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +22,13 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 @Component("UserController")
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private TokenService tokenService;
 
     @PostConstruct
     private void init() {
@@ -43,6 +48,13 @@ public class UserController {
         user.setPassword(userToCreate.getPassword());
         // Save
         return userService.add(user);
+    }
+
+    @RequestMapping(value = "/me", method = RequestMethod.GET)
+    @ResponseBody
+    public User getSelf() throws Exception {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userService.get((String) authentication.getPrincipal());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -103,6 +115,14 @@ public class UserController {
     public void delete(
             @PathVariable("id") final String id)
             throws CustomNotFoundException {
+        final User user = userService.get(id);
+        for (String tokenId : user.getTokens().values()) {
+            try {
+                tokenService.delete(tokenId);
+            } catch (Exception e) {
+                //nevermind
+            }
+        }
         userService.delete(id);
     }
 
