@@ -2,7 +2,6 @@ package com.gop.lfg.config;
 
 import com.gop.lfg.security.CustomAuthenticationFilter;
 import com.gop.lfg.security.CustomAuthenticationManager;
-import com.gop.lfg.security.CustomAuthenticationProvider;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,19 +11,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import javax.annotation.PostConstruct;
 
-/**
- * Created by VMPX4526 on 25/02/2015.
- */
 @Slf4j
 @Configuration
-@EnableWebSecurity
+@EnableWebMvcSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityProperties security;
@@ -33,9 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private TokenService tokenService;
 
- //  @Autowired
- //  private CustomAuthenticationProvider customAuthenticationProvider;
-
     @PostConstruct
     private void init() {
         log.info("SecurityConfig Loaded");
@@ -43,31 +38,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        log.info("Configure");
         http.csrf().disable();
         http.httpBasic().disable();
 
-        //URL white list
-        http.authorizeRequests().antMatchers("/api/user","/api/token/create","/api/token/refresh", "/api-docs/**", "/index.html", "/swagger/**").permitAll();
-
-        //URL intercepted
-        http.authorizeRequests().antMatchers("/api/*").permitAll().anyRequest().authenticated();
-
-        //Session
-        //http.formLogin().loginProcessingUrl("/session/login").passwordParameter("password").usernameParameter("username")
-        //        .failureHandler(new CustomAuthenticationFailureHandler())
-        //        .successHandler(new CustomAuthenticationSuccessHandler()).permitAll();
-
-        //Logout
-        //http.logout().logoutUrl("/logout").permitAll();
+        // API whitelist
+        http.authorizeRequests().antMatchers("/api/user", "/api/token/create", "/api/token/refresh").permitAll();
+        // API secured (all except whitelist)
+        http.authorizeRequests().antMatchers("/api/**").authenticated();
 
         http.addFilterBefore(new CustomAuthenticationFilter(), AnonymousAuthenticationFilter.class);
-
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(new CustomAuthenticationManager(tokenService,userService));
-                //customAuthenticationProvider);
+        auth.authenticationProvider(new CustomAuthenticationManager(tokenService, userService));
     }
 
     @Bean

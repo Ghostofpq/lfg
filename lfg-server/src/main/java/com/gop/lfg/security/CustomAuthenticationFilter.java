@@ -24,6 +24,7 @@ public class CustomAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+        log.trace("Filter !");
         HttpServletRequest httpServletRequest = (HttpServletRequest) req;
         // Get the access token in the header
         final String accessToken = httpServletRequest.getHeader(HEADER_ACCESS_TOKEN);
