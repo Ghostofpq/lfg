@@ -14,52 +14,43 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
 import java.nio.charset.Charset;
 
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.Assert.assertEquals;
 
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = LfgApplication.class)
-@WebAppConfiguration
+@WebIntegrationTest(randomPort = true)
 public class TokenControllerIT {
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8")
     );
-
+    @Value("${local.server.port}")
+    private String localPort;
+    private String baseURI;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TokenRepository tokenRepository;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    @Autowired
-    private Filter springSecurityFilterChain;
-
-    private MockMvc mockMvc;
-    private ObjectMapper mapper = new ObjectMapper();
+    private RestTemplate template;
 
     @PostConstruct
     private void init() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
-
+        template = new RestTemplate();
+        baseURI = "http://localhost:" + localPort;
     }
 
     private static String USER_1_EMAIL = "bob@bob.bob";
@@ -101,27 +92,39 @@ public class TokenControllerIT {
 
     @Test
     public void createTokenForUser1() throws Exception {
+        log.debug("=================================================");
+        log.debug("===============createTokenForUser1===============");
+        log.debug("=================================================");
+
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, "test");
 
-        mockMvc.perform(post("/api/token/create").content(mapper.writeValueAsString(tokenRequest)).contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8));
+        final ResponseEntity<Token> tokenCreationResponse = template.postForEntity(baseURI + "/api/token/create", tokenRequest, Token.class);
+        assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
     }
 
     @Test
     public void createdTokenForUser1GrantsAccessToHisData() throws Exception {
+        log.debug("=================================================");
+        log.debug("====createdTokenForUser1GrantsAccessToHisData====");
+        log.debug("=================================================");
+
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, "test");
 
-        final MvcResult res = mockMvc.perform(post("/api/token/create").content(mapper.writeValueAsString(tokenRequest)).contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-                .andReturn();
-        final Token token = mapper.readValue(res.getResponse().getContentAsString(), Token.class);
+        final ResponseEntity<Token> tokenCreationResponse = template.postForEntity(baseURI + "/api/token/create", tokenRequest, Token.class);
+        assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final Token token = tokenCreationResponse.getBody();
 
-        mockMvc.perform(get("/api/user/me").contentType(APPLICATION_JSON_UTF8).header(CustomAuthenticationFilter.HEADER_ACCESS_TOKEN, token.getAccessToken()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$." + User.FIELD_LOGIN, is(USER_1_LOGIN)))
-                .andExpect(jsonPath("$." + User.FIELD_EMAIL, is(USER_1_EMAIL)));
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set(CustomAuthenticationFilter.HEADER_ACCESS_TOKEN, token.getAccessToken());
+        final   HttpEntity entity = new HttpEntity<>(headers);
+
+        final ResponseEntity<User> getUserResponse = template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, User.class);
+        assertEquals(getUserResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(getUserResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final User user = getUserResponse.getBody();
+        assertEquals(user.getLogin(), USER_1_LOGIN);
+        assertEquals(user.getEmail(), USER_1_EMAIL);
     }
 }
