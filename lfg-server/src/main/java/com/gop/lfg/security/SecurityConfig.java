@@ -1,7 +1,5 @@
-package com.gop.lfg.config;
+package com.gop.lfg.security;
 
-import com.gop.lfg.security.CustomAuthenticationFilter;
-import com.gop.lfg.security.CustomAuthenticationManager;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/**").authenticated();
 
         http.addFilterBefore(new CustomAuthenticationFilter(), AnonymousAuthenticationFilter.class);
+
+        http.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationFailureHandler());
     }
 
     @Override

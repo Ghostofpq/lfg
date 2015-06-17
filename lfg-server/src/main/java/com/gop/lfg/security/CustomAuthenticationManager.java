@@ -5,8 +5,10 @@ import com.gop.lfg.data.models.User;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 
 @Slf4j
@@ -21,7 +23,7 @@ public class CustomAuthenticationManager implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String accessToken = (String) authentication.getDetails();
         if (accessToken == null) {
             log.warn("No Token");
@@ -30,19 +32,23 @@ public class CustomAuthenticationManager implements AuthenticationProvider {
                 log.trace("accessToken :" + accessToken);
                 final Token token = tokenService.getByAccessToken(accessToken);
                 log.trace("token : " + token.toString());
-                final User user = userService.get(token.getUserId());
-                log.trace("user : " + user.toString());
-                String name = "";
-                for (String key : user.getTokens().keySet()) {
-                    if (user.getTokens().get(key).equals(token.getId())) {
-                        name = key;
-                        break;
+                if (token.getExpiresAt() > DateTime.now().getMillis()) {
+                    final User user = userService.get(token.getUserId());
+                    log.trace("user : " + user.toString());
+                    String name = "";
+                    for (String key : user.getTokens().keySet()) {
+                        if (user.getTokens().get(key).equals(token.getId())) {
+                            name = key;
+                            break;
+                        }
                     }
+                    ((CustomAuthentication) authentication).completeAuth(user.getId(), name, user.getRoles());
+                    log.trace("authentication : " + ((CustomAuthentication) authentication).toString());
+                } else {
+                    throw new CustomAuthenticationException("Expired Token");
                 }
-                ((CustomAuthentication) authentication).completeAuth(user.getId(), name, user.getRoles());
-                log.trace("authentication : " + ((CustomAuthentication) authentication).toString());
             } catch (Exception e) {
-                log.warn("Auth failed for " + accessToken);
+                throw new CustomAuthenticationException("Auth failed", e.getCause());
             }
         }
         return authentication;

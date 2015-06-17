@@ -11,6 +11,8 @@ import com.gop.lfg.utils.TokenRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,6 +69,13 @@ public class TokenController {
         refreshedToken.setId(token.getId());
         refreshedToken = tokenService.update(refreshedToken);
         return refreshedToken;
+    }
+
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    @ResponseBody
+    public Token get() throws Exception {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return tokenService.getByAccessToken((String) authentication.getDetails());
     }
 
 }
