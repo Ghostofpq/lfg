@@ -22,9 +22,9 @@ public class User {
     public final static String ROLE_USER = "user";
     public final static String ROLE_ADMIN = "admin";
 
-
     public User() {
         tokens = new HashMap<>();
+        profiles = new HashSet<>();
         roles = new HashSet<>();
         roles.add(ROLE_USER);
     }
@@ -47,6 +47,7 @@ public class User {
     private Set<String> roles;
 
     private Map<String, String> tokens;
+    private Set<String> profiles;
 
     public void setPassword(String password) {
         final Random r = new SecureRandom();
