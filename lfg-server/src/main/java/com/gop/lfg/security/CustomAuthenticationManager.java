@@ -2,6 +2,8 @@ package com.gop.lfg.security;
 
 import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
+import com.gop.lfg.exceptions.CustomExpiredTokenExceptionException;
+import com.gop.lfg.exceptions.CustomNotFoundException;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +47,9 @@ public class CustomAuthenticationManager implements AuthenticationProvider {
                     ((CustomAuthentication) authentication).completeAuth(user.getId(), name, user.getRoles());
                     log.trace("authentication : " + ((CustomAuthentication) authentication).toString());
                 } else {
-                    throw new CustomAuthenticationException("Expired Token");
+                    throw new CustomExpiredTokenExceptionException("Expired Token");
                 }
-            } catch (Exception e) {
+            } catch (CustomNotFoundException e) {
                 throw new CustomAuthenticationException("Auth failed", e.getCause());
             }
         }

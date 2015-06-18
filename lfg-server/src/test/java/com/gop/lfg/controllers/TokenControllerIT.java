@@ -188,7 +188,7 @@ public class TokenControllerIT {
             template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, ErrorMessage.class);
             assertTrue(false);
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains(HttpStatus.FORBIDDEN.toString()));
+            assertTrue(e.getMessage().contains("418"));
         }
     }
 

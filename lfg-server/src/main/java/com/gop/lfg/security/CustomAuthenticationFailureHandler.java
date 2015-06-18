@@ -1,9 +1,9 @@
 package com.gop.lfg.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gop.lfg.exceptions.CustomExpiredTokenExceptionException;
 import com.gop.lfg.exceptions.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -17,12 +17,16 @@ import java.io.IOException;
  */
 @Slf4j
 public class CustomAuthenticationFailureHandler implements AuthenticationEntryPoint {
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        httpServletResponse.setStatus(403);
-        ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
+        final  ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
+        if (e instanceof CustomExpiredTokenExceptionException) {
+            httpServletResponse.setStatus(418);
+        } else {
+            httpServletResponse.setStatus(403);
+        }
         httpServletResponse.getOutputStream().print(mapper.writeValueAsString(errorMessage));
     }
 }
