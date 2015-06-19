@@ -15,6 +15,9 @@ public abstract class Profile {
     private Float level;
     private Location location;
 
+    public final static String FIELD_LOCATION = "location";
+    public final static String FIELD_LEVEL = "level";
+
     public enum ProfileType {
         MUSICIAN("musician"),
         BOARGAME("boardgame");

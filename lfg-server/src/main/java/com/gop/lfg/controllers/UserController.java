@@ -129,7 +129,7 @@ public class UserController {
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
-    public Page<User> getByParameters(
+    public Page<User> getAll(
             @RequestParam(value = "page", required = false, defaultValue = "0") final Integer pageNumber,
             @RequestParam(value = "size", required = false, defaultValue = "10") final Integer size) {
         return userService.getAll(pageNumber, size);

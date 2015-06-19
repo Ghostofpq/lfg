@@ -9,22 +9,26 @@ public class MusicianProfile extends Profile {
     private boolean canTutor;
     private MusicianRole musicianRole;
 
+    public final static String FIELD_CAN_TUTOR= "canTutor";
+
     public MusicianProfile() {
         setProfileType(ProfileType.MUSICIAN);
     }
 
     public enum MusicianRole {
-        GUITAR("guitar"),
-        DRUMS("drums"),
-        BASS("bass"),
-        KEYBOARD("keyboard"),
-        SAX("sax"),
-        TRUMPET("trumpet"),
+        GUITAR("Guitar"),
+        ELECTRIC_GUITAR("Electric guitar"),
+        DRUMS("Drums"),
+        BASS("Bass"),
+        KEYBOARD("Keyboard"),
+        SAX("Sax"),
+        TRUMPET("Trumpet"),
 
-        VOCALS("vocals"),
+        VOCALS("Vocals"),
 
-        WRITER("writer"),
-        COMPOSER("composer");
+        WRITER("Writer"),
+        COMPOSER("Composer"),
+        MANAGER("Manager");
 
         private String textValue;
 

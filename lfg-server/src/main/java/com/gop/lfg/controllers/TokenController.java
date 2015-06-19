@@ -77,5 +77,4 @@ public class TokenController {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return tokenService.getByAccessToken((String) authentication.getDetails());
     }
-
 }
