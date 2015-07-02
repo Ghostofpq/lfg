@@ -6,6 +6,7 @@ import com.gop.lfg.exceptions.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import java.io.IOException;
  * @author Arthur Viguier (xqmx7112) on 10/03/2015.
  */
 @Slf4j
+@Component("CustomAuthenticationFailureHandler")
 public class CustomAuthenticationFailureHandler implements AuthenticationEntryPoint {
     final ObjectMapper mapper = new ObjectMapper();
 

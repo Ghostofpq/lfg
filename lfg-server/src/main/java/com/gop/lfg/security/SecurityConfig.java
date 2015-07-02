@@ -1,5 +1,6 @@
 package com.gop.lfg.security;
 
+import com.gop.lfg.services.JwtService;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,6 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -28,6 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private CustomAuthenticationFailureHandler failureHandler;
+    @Autowired
+    private CustomAuthenticationFilter authenticationFilter;
 
     @PostConstruct
     private void init() {
@@ -45,19 +51,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // API secured (all except whitelist)
         http.authorizeRequests().antMatchers("/api/**").authenticated();
 
-        http.addFilterBefore(new CustomAuthenticationFilter(), AnonymousAuthenticationFilter.class);
+        http.exceptionHandling().authenticationEntryPoint(failureHandler);
+        http.addFilterBefore(authenticationFilter, AnonymousAuthenticationFilter.class);
 
-        http.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationFailureHandler());
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(new CustomAuthenticationManager(tokenService, userService));
-    }
+    // @Override
+    // protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    //     auth.authenticationProvider(new CustomAuthenticationManager(tokenService, userService));
+    // }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+   // @Bean
+   // @Override
+   // public AuthenticationManager authenticationManagerBean() throws Exception {
+   //     return super.authenticationManagerBean();
+   // }
 }

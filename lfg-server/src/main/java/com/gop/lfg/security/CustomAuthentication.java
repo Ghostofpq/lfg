@@ -1,5 +1,6 @@
 package com.gop.lfg.security;
 
+import com.gop.lfg.data.models.Token;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -18,20 +19,12 @@ import java.util.Set;
 public class CustomAuthentication implements Authentication {
     private String accessToken;
     private String userId;
-    private String name;
-    private Set<GrantedAuthority> roles;
+    private Set<GrantedAuthority> roles = new HashSet<>();
 
-    public CustomAuthentication(String accessToken) {
-        this.accessToken = accessToken;
-        roles = new HashSet<>();
-    }
-
-    public void completeAuth(final String userId, final String name, final Set<String> userRoles) {
-        this.userId = userId;
-        this.name = name;
-        for (String role : userRoles) {
-            this.roles.add(new SimpleGrantedAuthority(role));
-        }
+    public CustomAuthentication(final Token token) {
+        accessToken = token.getAccessToken();
+        userId = token.getUserId();
+        token.getRoles().forEach(role -> roles.add(new SimpleGrantedAuthority(role)));
     }
 
     @Override
@@ -65,6 +58,6 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return name;
+        return "";
     }
 }

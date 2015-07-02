@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 
 
 @Slf4j
+@Deprecated
 public class CustomAuthenticationManager implements AuthenticationProvider {
 
     private TokenService tokenService;
@@ -44,7 +45,7 @@ public class CustomAuthenticationManager implements AuthenticationProvider {
                             break;
                         }
                     }
-                    ((CustomAuthentication) authentication).completeAuth(user.getId(), name, user.getRoles());
+                 //   ((CustomAuthentication) authentication).completeAuth(user.getId(), name, user.getRoles());
                     log.trace("authentication : " + ((CustomAuthentication) authentication).toString());
                 } else {
                     throw new CustomExpiredTokenExceptionException("Expired Token");

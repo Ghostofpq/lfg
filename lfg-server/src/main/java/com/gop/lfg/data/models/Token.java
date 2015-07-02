@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.Set;
 
 @Data
 @ToString
@@ -29,13 +30,15 @@ public class Token {
     private String userId;
     private long issuedAt;
     private long expiresAt;
+    private Set<String> roles;
 
-    public Token(String userId) {
+    public Token(User user) {
         final Random randomSeed = new SecureRandom();
         this.accessToken = new BigInteger(130, randomSeed).toString(64);
         this.tokenRefresh = new BigInteger(130, randomSeed).toString(32);
 
-        this.userId = userId;
+        this.userId = user.getId();
+        this.roles = user.getRoles();
 
         this.issuedAt = DateTime.now().getMillis();
         this.expiresAt = issuedAt + 1000 * 60 * 60; //1h
