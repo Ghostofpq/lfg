@@ -29,6 +29,11 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
                 templateUrl: "templates/menu.html",
                 controller: 'AppCtrl'
             })
+            .state('login', {
+                url: "/login",
+                templateUrl: "templates/login.html",
+                controller: 'LoginCtrl'
+            })
 
             .state('app.search', {
                 url: "/search",
@@ -80,19 +85,34 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
                         return user;
                     },
                     isLoggedIn: function () {
-                        console.log("$auth.isLoggedIn");
-                        return typeof user != "undefined";
+                        var result = typeof user != "undefined";
+                        console.log("$auth.isLoggedIn : " + result);
+                        return result;
                     },
                     logIn: function () {
                         console.log("$auth.logIn");
                         if ($lfgRest.hasToken()) {
-                            $lfgRest.getUser();
+                            return $lfgRest.getUser();
                         }
                     },
                     createToken: function (login, password) {
                         console.log("$auth.createToken");
-                        $lfgRest.createToken(login, password);
-                        $lfgRest.getUser();
+                        $lfgRest.createToken(login, password)
+                            .success(function (res) {
+                                $lfgRest.setToken(res);
+                                $lfgRest.getUser()
+                                    .success(function (getUserResponse) {
+                                        user=getUserResponse;
+                                        return true;
+                                    }).error(function (getUserError) {
+                                        console.log(getUserError);
+                                        return false;
+                                    });
+                                ;
+                            }).error(function (err) {
+                                console.log(err);
+                                return false;
+                            });
                     },
                     logOut: function () {
                         console.log("$auth.logOut");

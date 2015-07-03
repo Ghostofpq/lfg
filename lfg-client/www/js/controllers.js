@@ -1,6 +1,10 @@
 angular.module('lfg.controllers', [])
 
-    .controller('AppCtrl', function ($scope, $ionicModal, $timeout, $auth) {
+    .controller('AppCtrl', function ($scope, $ionicModal, $timeout, $auth,$location) {
+        console.log("AppCtrl");
+        if (!$auth.isLoggedIn()) {
+            $location.path("/login");
+        }
 
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
@@ -11,43 +15,59 @@ angular.module('lfg.controllers', [])
 
         // Form data for the login modal
         //LOGIN
+      // $scope.loginData = {};
+      // $ionicModal.fromTemplateUrl('templates/loginmodal.html', {
+      //     scope: $scope
+      // }).then(function (modal) {
+      //     $scope.modalLogin = modal;
+      // });
+      // $scope.closeLogin = function () {
+      //     $scope.modalLogin.hide();
+      // };
+      // $scope.login = function () {
+      //     $auth.logIn();
+      //     if (!$auth.isLoggedIn()) {
+      //         $scope.modalLogin.show();
+      //     }
+      // };
+      // $scope.doLogin = function () {
+      //     console.log('Doing login', $scope.loginData);
+      //     $auth.createToken($scope.loginData.login, $scope.loginData.password);
+      // };
+      // //REGISTER
+      // $scope.registerData = {};
+      // $ionicModal.fromTemplateUrl('templates/register.html', {
+      //     scope: $scope
+      // }).then(function (modal) {
+      //     $scope.modalRegister = modal;
+      // });
+      // $scope.closeRegister = function () {
+      //     $scope.modalRegister.hide();
+      // };
+      // $scope.register = function () {
+      //     $scope.modalRegister.show();
+      // };
+      // $scope.doRegister = function () {
+      //     console.log('Doing register', $scope.registerData);
+      //     $auth.register($scope.registerData.login, $scope.registerData.password, $scope.registerData.email);
+      // };
+
+    })
+
+    .controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $auth,$location) {
+        console.log("LoginCtrl");
+        $auth.logIn();
+        if ($auth.isLoggedIn()) {
+            console.log("already logged in goind to app");
+            $location.path("/app");
+        }
         $scope.loginData = {};
-        $ionicModal.fromTemplateUrl('templates/login.html', {
-            scope: $scope
-        }).then(function (modal) {
-            $scope.modalLogin = modal;
-        });
-        $scope.closeLogin = function () {
-            $scope.modalLogin.hide();
-        };
-        $scope.login = function () {
-            $auth.logIn();
-            if (!$auth.isLoggedIn()) {
-                $scope.modalLogin.show();
-            }
-        };
         $scope.doLogin = function () {
             console.log('Doing login', $scope.loginData);
-            $auth.createToken($scope.loginData.login, $scope.loginData.password);
+            if($auth.createToken($scope.loginData.login, $scope.loginData.password)){
+                $location.path("/app");
+            }
         };
-        //REGISTER
-        $scope.registerData = {};
-        $ionicModal.fromTemplateUrl('templates/register.html', {
-            scope: $scope
-        }).then(function (modal) {
-            $scope.modalRegister = modal;
-        });
-        $scope.closeRegister = function () {
-            $scope.modalRegister.hide();
-        };
-        $scope.register = function () {
-            $scope.modalRegister.show();
-        };
-        $scope.doRegister = function () {
-            console.log('Doing register', $scope.registerData);
-            $auth.register($scope.registerData.login, $scope.registerData.password, $scope.registerData.email);
-        };
-
     })
 
     .controller('PlaylistsCtrl', function ($scope) {

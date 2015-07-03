@@ -19,6 +19,10 @@ angular.module('lfg.rest', [])
                         console.log("$lfgRest.hasToken");
                         return typeof token != "undefined";
                     },
+                    setToken: function (newtoken) {
+                        console.log("$lfgRest.setToken");
+                        token = newtoken;
+                    },
                     registerUser: function (login, password, email) {
                         return $http.post(
                             BASE_URL + '/user',
@@ -30,55 +34,41 @@ angular.module('lfg.rest', [])
                         );
                     },
                     getUser: function () {
-                        console.log(TOKEN.accessToken);
-                        var req = {
-                            method: 'GET',
+                        console.log("$lfgRest.getUser");
+                        console.log(token.value);
+                        var config = {
                             url: BASE_URL + '/user/me',
+                            method: "GET",
                             headers: {
-                                'ACCESS-TOKEN': TOKEN.accessToken
+                                "x-token": token.value
                             }
                         };
-                        $http(req)
-                            .success(function (res) {
-                                return res;
-                            })
-                            .error(function (err) {
-                                console.log(err);
-                                return err;
-                            });
+                        var req = $http(config);
+
+                        console.log(req);
+                        return req;
                     },
                     createToken: function (login, password) {
-                        console.log("createToken");
-                        $http.post(BASE_URL + '/token/create',
+                        console.log("$lfgRest.createToken");
+                        return $http.post(BASE_URL + '/token/create',
                             {
                                 login: login,
                                 password: password,
                                 nickname: "ionic"
-                            }
-                        )
-                            .success(function (res) {
-                                TOKEN = res;
-                                console.log(TOKEN);
-                                return TOKEN;
-                            })
-                            .error(function (err) {
-                                console.log(err);
-                                return err;
                             });
-
                     },
                     refreshToken: function () {
-                        TOKEN = $http.post(
+                        token = $http.post(
                             BASE_URL + '/token/refresh',
                             {
-                                accessToken: TOKEN.accessToken,
-                                refreshToken: TOKEN.refreshToken
+                                accessToken: token.accessToken,
+                                refreshToken: token.refreshToken
                             }
                         );
-                        return TOKEN;
+                        return token;
                     },
                     destroyToken: function () {
-                        TOKEN = undefined;
+                        token = undefined;
                     }
                 };
             }
