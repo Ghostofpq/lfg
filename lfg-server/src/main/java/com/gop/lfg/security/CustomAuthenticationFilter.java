@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class CustomAuthenticationFilter implements Filter {
-    public static final String HEADER_TOKEN = "X-TOKEN";
+    public static final String HEADER_TOKEN = "x-token";
 
     @Autowired
     private JwtService jwtService;

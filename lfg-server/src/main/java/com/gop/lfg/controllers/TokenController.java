@@ -2,6 +2,7 @@ package com.gop.lfg.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
 import com.gop.lfg.exceptions.CustomInvalidLoginOrPasswordException;
@@ -50,7 +51,7 @@ public class TokenController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody
-    public String create(@RequestBody final TokenRequest tokenRequest) throws Exception {
+    public EncodedToken create(@RequestBody final TokenRequest tokenRequest) throws Exception {
         User user = userService.getByLogin(tokenRequest.getLogin());
         final String encodedPassword = shaEncoder.encodePassword(tokenRequest.getPassword(), user.getSalt());
         if (!user.getEncodedPassword().equals(encodedPassword)) {
@@ -69,8 +70,8 @@ public class TokenController {
 
     @RequestMapping(value = "/refresh", method = RequestMethod.POST)
     @ResponseBody
-    public String refresh(@RequestBody final String token) throws Exception {
-        final Token decodedToken = jwtService.decode(token);
+    public EncodedToken refresh(@RequestBody final EncodedToken token) throws Exception {
+        final Token decodedToken = jwtService.decode(token.getValue());
         final Token storedToken = tokenService.getByAccessToken(decodedToken.getAccessToken());
         if (!decodedToken.getTokenRefresh().equals(storedToken.getTokenRefresh())) {
             throw new CustomInvalidLoginOrPasswordException("Invalid refresh");

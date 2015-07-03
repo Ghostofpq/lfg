@@ -1,6 +1,7 @@
 package com.gop.lfg.controllers;
 
 import com.gop.lfg.LfgApplication;
+import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
 import com.gop.lfg.data.repositories.TokenRepository;
@@ -9,6 +10,7 @@ import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.security.CustomAuthenticationFilter;
 import com.gop.lfg.services.JwtService;
 import com.gop.lfg.utils.TokenRequest;
+import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -57,11 +59,6 @@ public class TokenControllerIT {
     private JwtService jwtService;
 
     private RestTemplate template;
-
-    @Data
-    public class CustomException extends IOException {
-        private Map properties;
-    }
 
     @PostConstruct
     private void init() {
@@ -117,7 +114,7 @@ public class TokenControllerIT {
         final ResponseEntity<String> tokenCreationResponse = template
                 .postForEntity(baseURI + "/api/token/create", tokenRequest, String.class);
         assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
-        assertEquals(tokenCreationResponse.getHeaders().getContentType(), TEXT_PLAIN_UTF8);
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
     }
 
     @Test
@@ -126,14 +123,14 @@ public class TokenControllerIT {
 
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
 
-        final ResponseEntity<String> tokenCreationResponse = template
-                .postForEntity(baseURI + "/api/token/create", tokenRequest, String.class);
+        final ResponseEntity<EncodedToken> tokenCreationResponse = template
+                .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
         assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
-        assertEquals(tokenCreationResponse.getHeaders().getContentType(), TEXT_PLAIN_UTF8);
-        final Token token = jwtService.decode(tokenCreationResponse.getBody());
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final Token token = jwtService.decode(tokenCreationResponse.getBody().getValue());
 
         final HttpHeaders headers = new HttpHeaders();
-        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token));
+        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
         final HttpEntity entity = new HttpEntity<>(headers);
 
         final ResponseEntity<Token> getTokenResponse = template
@@ -155,14 +152,14 @@ public class TokenControllerIT {
 
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
 
-        final ResponseEntity<String> tokenCreationResponse = template
-                .postForEntity(baseURI + "/api/token/create", tokenRequest, String.class);
+        final ResponseEntity<EncodedToken> tokenCreationResponse = template
+                .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
         assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
-        assertEquals(tokenCreationResponse.getHeaders().getContentType(), TEXT_PLAIN_UTF8);
-        final Token token = jwtService.decode(tokenCreationResponse.getBody());
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(),APPLICATION_JSON_UTF8 );
+        final Token token = jwtService.decode(tokenCreationResponse.getBody().getValue());
 
         final HttpHeaders headers = new HttpHeaders();
-        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token));
+        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
         final HttpEntity entity = new HttpEntity<>(headers);
 
         final ResponseEntity<User> getUserResponse = template
@@ -183,15 +180,15 @@ public class TokenControllerIT {
 
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
 
-        final ResponseEntity<String> tokenCreationResponse = template
-                .postForEntity(baseURI + "/api/token/create", tokenRequest, String.class);
+        final ResponseEntity<EncodedToken> tokenCreationResponse = template
+                .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
         assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
-        assertEquals(tokenCreationResponse.getHeaders().getContentType(), TEXT_PLAIN_UTF8);
-        final Token token = jwtService.decode(tokenCreationResponse.getBody());
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final Token token = jwtService.decode(tokenCreationResponse.getBody().getValue());
         token.setExpiresAt(DateTime.now().minusMinutes(1).getMillis());
 
         final HttpHeaders headers = new HttpHeaders();
-        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token));
+        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
         final HttpEntity entity = new HttpEntity<>(headers);
         try {
             template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, ErrorMessage.class);

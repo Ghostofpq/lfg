@@ -2,6 +2,7 @@ package com.gop.lfg.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
@@ -37,9 +38,9 @@ public class JwtService {
         jwe.setKey(key);
     }
 
-    public String encode(Token o) throws JsonProcessingException, JoseException {
+    public EncodedToken encode(Token o) throws JsonProcessingException, JoseException {
         jwe.setPayload(mapper.writeValueAsString(o));
-        return jwe.getCompactSerialization();
+        return new EncodedToken(jwe.getCompactSerialization());
     }
 
     public Token decode(String s) throws IOException, JoseException {
