@@ -61,9 +61,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //     auth.authenticationProvider(new CustomAuthenticationManager(tokenService, userService));
     // }
 
-   // @Bean
-   // @Override
-   // public AuthenticationManager authenticationManagerBean() throws Exception {
-   //     return super.authenticationManagerBean();
-   // }
+    // @Bean
+    // @Override
+    // public AuthenticationManager authenticationManagerBean() throws Exception {
+    //     return super.authenticationManagerBean();
+    // }
 }

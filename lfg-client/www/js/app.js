@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
+angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -19,7 +19,13 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
             }
         });
     })
-
+    .config(function($httpProvider) {
+        //Enable cross domain calls
+        $httpProvider.defaults.headers.common = {'Content-Type':'application/json'};
+        $httpProvider.defaults.headers.post = {};
+        $httpProvider.defaults.headers.put = {};
+        $httpProvider.defaults.headers.patch = {};
+    })
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
 
@@ -76,18 +82,14 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
     })
 
     .provider("$auth", function () {
-        var user = undefined;
         return {
-            $get: function ($location, $lfgRest) {
+            $get: function ($location, $lfgRest,$window) {
                 return {
                     user: function () {
-                        console.log("$auth.user");
-                        return user;
+                        return JSON.parse($window.localStorage["user"]|| '{}');
                     },
                     isLoggedIn: function () {
-                        var result = typeof user != "undefined";
-                        console.log("$auth.isLoggedIn : " + result);
-                        return result;
+                        return this.user() != {};
                     },
                     logIn: function () {
                         console.log("$auth.logIn");
@@ -97,15 +99,17 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
                     },
                     createToken: function (login, password) {
                         console.log("$auth.createToken");
-                        $lfgRest.createToken(login, password)
+                        return $lfgRest.createToken(login, password)
                             .success(function (res) {
                                 $lfgRest.setToken(res);
                                 $lfgRest.getUser()
                                     .success(function (getUserResponse) {
                                         user=getUserResponse;
+                                        console.log("OK:"+user);
                                         return true;
                                     }).error(function (getUserError) {
                                         console.log(getUserError);
+                                        console.log("KO:"+getUserError);
                                         return false;
                                     });
                                 ;
@@ -114,9 +118,21 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'lfg.rest'])
                                 return false;
                             });
                     },
+                    setToken:function(token){
+                        console.log("$auth.setToken");
+                        $lfgRest.setToken(token);
+                    },
+                    getUser:function(){
+                        console.log("$auth.getUser");
+                        return user;
+                    },
+                    setUser:function(user){
+                        console.log("$auth.setUser");
+                        $window.localStorage["user"]=JSON.stringify(user);
+                    },
                     logOut: function () {
                         console.log("$auth.logOut");
-                        user = undefined;
+                        $window.localStorage["user"]={};
                         $location.path("/app/login");
                     },
                     register: function (login, password, email) {

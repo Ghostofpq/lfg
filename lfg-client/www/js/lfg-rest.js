@@ -2,8 +2,6 @@ angular.module('lfg.rest', [])
     .provider("$lfgRest", function () {
         console.log("define lfgRest");
         var BASE_URL = "http://localhost:8080/api";
-        var token = undefined;
-
         var urlValue = function (v) {
             if (angular.isUndefined(v) || v === null || v === "") {
                 return "null";
@@ -13,15 +11,15 @@ angular.module('lfg.rest', [])
         };
 
         return {
-            $get: function ($http) {
+            $get: function ($http,$window) {
                 return {
                     hasToken: function () {
                         console.log("$lfgRest.hasToken");
-                        return typeof token != "undefined";
+                        return typeof $window.localStorage["x-token"] != "undefined";
                     },
                     setToken: function (newtoken) {
                         console.log("$lfgRest.setToken");
-                        token = newtoken;
+                        $window.localStorage["x-token"]=newtoken.value;
                     },
                     registerUser: function (login, password, email) {
                         return $http.post(
@@ -35,18 +33,13 @@ angular.module('lfg.rest', [])
                     },
                     getUser: function () {
                         console.log("$lfgRest.getUser");
-                        console.log(token.value);
-                        var config = {
+                        return $http({
+                            method: 'GET',
                             url: BASE_URL + '/user/me',
-                            method: "GET",
                             headers: {
-                                "x-token": token.value
+                                'x-token':$window.localStorage["x-token"]
                             }
-                        };
-                        var req = $http(config);
-
-                        console.log(req);
-                        return req;
+                        });
                     },
                     createToken: function (login, password) {
                         console.log("$lfgRest.createToken");
@@ -58,14 +51,7 @@ angular.module('lfg.rest', [])
                             });
                     },
                     refreshToken: function () {
-                        token = $http.post(
-                            BASE_URL + '/token/refresh',
-                            {
-                                accessToken: token.accessToken,
-                                refreshToken: token.refreshToken
-                            }
-                        );
-                        return token;
+                        // TODO
                     },
                     destroyToken: function () {
                         token = undefined;

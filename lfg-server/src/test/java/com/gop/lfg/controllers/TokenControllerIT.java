@@ -10,8 +10,6 @@ import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.security.CustomAuthenticationFilter;
 import com.gop.lfg.services.JwtService;
 import com.gop.lfg.utils.TokenRequest;
-import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -27,9 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -155,7 +151,7 @@ public class TokenControllerIT {
         final ResponseEntity<EncodedToken> tokenCreationResponse = template
                 .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
         assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
-        assertEquals(tokenCreationResponse.getHeaders().getContentType(),APPLICATION_JSON_UTF8 );
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
         final Token token = jwtService.decode(tokenCreationResponse.getBody().getValue());
 
         final HttpHeaders headers = new HttpHeaders();

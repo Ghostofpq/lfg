@@ -64,9 +64,25 @@ angular.module('lfg.controllers', [])
         $scope.loginData = {};
         $scope.doLogin = function () {
             console.log('Doing login', $scope.loginData);
-            if($auth.createToken($scope.loginData.login, $scope.loginData.password)){
-                $location.path("/app");
-            }
+            $auth.createToken($scope.loginData.login, $scope.loginData.password)
+                .success(function (res) {
+                    console.log(res);
+                    $auth.setToken(res);
+                    $auth.logIn()
+                        .success(function (getUserResponse) {
+                            $auth.setUser(getUserResponse);
+                            $location.path("/playlists");
+                        })
+                        .error(function (getUserError) {
+                            console.log(getUserError);
+                            $scope.error=getUserError.status + " : "+getUserError.error;
+                        });
+                    ;
+                })
+                .error(function (err) {
+                    console.log(err);
+                    $scope.error=err.status + " : "+err.error;
+                });
         };
     })
 
