@@ -104,16 +104,18 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
                                 $lfgRest.setToken(res);
                                 $lfgRest.getUser()
                                     .success(function (getUserResponse) {
-                                        user=getUserResponse;
+                                        this.setUser(getUserResponse);
                                         console.log("OK:"+user);
                                         return true;
                                     }).error(function (getUserError) {
+                                        this.setUser({});
                                         console.log(getUserError);
                                         console.log("KO:"+getUserError);
                                         return false;
                                     });
                                 ;
                             }).error(function (err) {
+                                this.setUser({});
                                 console.log(err);
                                 return false;
                             });
