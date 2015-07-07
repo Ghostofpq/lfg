@@ -4,3 +4,6 @@ lfg-server/target/**
 lfg-server/.idea/**
 lfg-client/.idea/workspace.xml
 lfg-server/.idea/workspace.xml
+
+lfg-server/.idea/
+lfg-client/.idea/

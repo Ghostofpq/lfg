@@ -85,11 +85,9 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
         return {
             $get: function ($location, $lfgRest,$window) {
                 return {
-                    user: function () {
-                        return JSON.parse($window.localStorage["user"]|| '{}');
-                    },
                     isLoggedIn: function () {
-                        return this.user() != {};
+                        console.log("$auth.isLoggedIn");
+                        return !angular.equals({},this.getUser());
                     },
                     logIn: function () {
                         console.log("$auth.logIn");
@@ -126,11 +124,11 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
                     },
                     getUser:function(){
                         console.log("$auth.getUser");
-                        return user;
+                        return JSON.parse($window.localStorage["user"]|| "{}");
                     },
-                    setUser:function(user){
+                    setUser:function(newUser){
                         console.log("$auth.setUser");
-                        $window.localStorage["user"]=JSON.stringify(user);
+                        $window.localStorage["user"]=JSON.stringify(newUser);
                     },
                     logOut: function () {
                         console.log("$auth.logOut");
