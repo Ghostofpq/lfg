@@ -2,13 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60f7904c-e5fb-4691-bcf0-1a1e977a24a3" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/data/models/EncodedToken.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/utils/CorsFilter.java" afterPath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/utils/CorsFilter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/security/CustomAuthenticationFilter.java" afterPath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/security/CustomAuthenticationFilter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/services/JwtService.java" afterPath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/services/JwtService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/controllers/TokenController.java" afterPath="$PROJECT_DIR$/../lfg-server/src/main/java/com/gop/lfg/controllers/TokenController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/src/test/java/com/gop/lfg/controllers/TokenControllerIT.java" afterPath="$PROJECT_DIR$/../lfg-server/src/test/java/com/gop/lfg/controllers/TokenControllerIT.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../lfg-server/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../lfg-server/.idea/workspace.xml" />
     </list>
     <ignored path="lfg-client.iws" />
@@ -545,7 +538,7 @@
       <workItem from="1435151775684" duration="9076000" />
       <workItem from="1435837251688" duration="334000" />
       <workItem from="1435837624808" duration="1228000" />
-      <workItem from="1435909020829" duration="8956000" />
+      <workItem from="1435909020829" duration="8976000" />
     </task>
     <task id="LOCAL-00001" summary="en cours">
       <created>1435939524459</created>
@@ -557,7 +550,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19594000" />
+    <option name="totallyTimeSpent" value="19614000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
