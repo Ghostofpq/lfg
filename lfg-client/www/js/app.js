@@ -35,10 +35,17 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
                 templateUrl: "templates/menu.html",
                 controller: 'AppCtrl'
             })
+        
             .state('login', {
                 url: "/login",
                 templateUrl: "templates/login.html",
                 controller: 'LoginCtrl'
+            })
+        
+            .state('signup', {
+                url: "/signup",
+                templateUrl: "templates/signup.html",
+                controller: 'SignupCtrl'
             })
 
             .state('app.search', {

@@ -39,13 +39,13 @@ public class CustomAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        log.info("CustomAuthenticationFilter !");
+        log.trace("CustomAuthenticationFilter !");
         HttpServletRequest httpServletRequest = (HttpServletRequest) req;
         HttpServletResponse httpServletResponse = (HttpServletResponse) res;
 
         // Get the access token in the header
         final String encodedToken = httpServletRequest.getHeader(HEADER_TOKEN);
-        log.info(HEADER_TOKEN + ":"+encodedToken);
+        log.trace(HEADER_TOKEN + ":"+encodedToken);
         if (!Strings.isNullOrEmpty(encodedToken)) {
             try {
                 final Token token = jwtService.decode(encodedToken);

@@ -53,7 +53,7 @@ public class UserController {
 
     @RequestMapping(value = "/me", method = RequestMethod.GET)
     @ResponseBody
-    public User getSelf() throws Exception {
+    public User getSelf() throws CustomNotFoundException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userService.get((String) authentication.getPrincipal());
     }
