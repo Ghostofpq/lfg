@@ -16,16 +16,27 @@ angular.module('lfg.rest', [])
                     //UTILS
                     isLoggedIn: function () {
                         console.log("$lfgRest.isLoggedIn");
-                        return !angular.equals({}, this.getUser());
+                        return !angular.equals({}, this.getUserLocal());
+                    },
+                    logOut: function () {
+                        console.log("$lfgRest.logOut");
+                        $window.localStorage["x-user"] = {};
+                        $window.localStorage["x-token"] = {};
                     },
                     // TOKENS
                     hasToken: function () {
                         console.log("$lfgRest.hasToken");
-                        return typeof $window.localStorage["x-token"] != "undefined";
+                        console.log(this.getToken());
+                        return ((typeof this.getToken() != "undefined") && (!angular.equals({}, this.getToken())));
                     },
                     getToken: function () {
                         console.log("$lfgRest.getToken");
-                        return typeof $window.localStorage["x-token"];
+                        try {
+                            return JSON.parse($window.localStorage["x-token"] || "{}");
+                        } catch (e) {
+                            this.logOut();
+                            return {};
+                        }
                     },
                     setToken: function (token) {
                         console.log("$lfgRest.setToken");
@@ -58,7 +69,12 @@ angular.module('lfg.rest', [])
                     },
                     getUserLocal: function () {
                         console.log("$lfgRest.getUserLocal");
-                        return JSON.parse($window.localStorage["x-user"] || "{}");
+                        try {
+                            return JSON.parse($window.localStorage["x-user"] || "{}")
+                        } catch (e) {
+                            this.logOut();
+                            return {};
+                        }
                     },
                     setUserLocal: function (user) {
                         console.log("$lfgRest.setUserLocal");

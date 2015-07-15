@@ -135,11 +135,11 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
                     },
                     setUser:function(newUser){
                         console.log("$auth.setUser");
-                        $window.localStorage["user"]=JSON.stringify(newUser);
+                        $window.localStorage["user"] = JSON.stringify(newUser);
                     },
                     logOut: function () {
                         console.log("$auth.logOut");
-                        $window.localStorage["user"]={};
+                        $window.localStorage["user"] = {};
                         $location.path("/app/login");
                     },
                     register: function (login, password, email) {

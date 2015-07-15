@@ -1,11 +1,14 @@
 angular.module('lfg.controllers', [])
 
-.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $auth, $location) {
+.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $lfgRest, $location) {
     console.log("AppCtrl");
-    if (!$auth.isLoggedIn()) {
+    if (!$lfgRest.isLoggedIn()) {
         $location.path("/login");
     }
-
+    $scope.logOut = function () {
+        $lfgRest.logOut();
+        $location.path("/login");
+    };
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
@@ -54,29 +57,38 @@ angular.module('lfg.controllers', [])
 
 })
 
-.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $auth, $location) {
+.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $auth, $location, $lfgRest) {
     console.log("LoginCtrl");
-    $auth.logIn();
-    if ($auth.isLoggedIn()) {
-        console.log("already logged in goind to app");
-        $location.path("/app");
+
+
+    if ($lfgRest.hasToken()) {
+        console.log("context has token");
+        $lfgRest.getUser()
+            .success(function (res) {
+                $lfgRest.setUserLocal(res);
+                $location.path("/playlist");
+            })
+            .error(function (err) {
+                $scope.error = err.status + " : " + err.error;
+            });
     }
+    console.log("context has no token");
     $scope.loginData = {};
     $scope.doLogin = function () {
         console.log('Doing login', $scope.loginData);
-        $auth.createToken($scope.loginData.login, $scope.loginData.password)
+        $lfgRest.createToken($scope.loginData.login, $scope.loginData.password)
             .success(function (res) {
                 console.log(res);
-                $auth.setToken(res);
-                $auth.logIn()
+                $lfgRest.setToken(res);
+                $lfgRest.getUser()
                     .success(function (getUserResponse) {
-                        $auth.setUser(getUserResponse);
-                        $location.path("/playlists");
+                        $lfgRest.setUserLocal(res);
+                        $location.path("/playlist");
                     })
                     .error(function (getUserError) {
                         console.log(getUserError);
                         $scope.error = getUserError.status + " : " + getUserError.error;
-                    });;
+                    });
             })
             .error(function (err) {
                 console.log(err);
@@ -87,13 +99,9 @@ angular.module('lfg.controllers', [])
 
 .controller('SignUpCtrl', function ($scope, $ionicModal, $timeout, $auth, $location) {
     console.log("SignUpCtrl");
-    
     $scope.signUpData = {};
     $scope.doSignUp = function () {
         console.log('Doing SignUp', $scope.signUpData);
-        
-        
-        
         $auth.createToken($scope.signUpData.login, $scope.signUpData.password)
             .success(function (res) {
                 console.log(res);
