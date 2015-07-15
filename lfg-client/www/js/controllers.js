@@ -57,9 +57,8 @@ angular.module('lfg.controllers', [])
 
 })
 
-.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $auth, $location, $lfgRest) {
+.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $location, $lfgRest) {
     console.log("LoginCtrl");
-
 
     if ($lfgRest.hasToken()) {
         console.log("context has token");
@@ -72,6 +71,7 @@ angular.module('lfg.controllers', [])
                 $scope.error = err.status + " : " + err.error;
             });
     }
+
     console.log("context has no token");
     $scope.loginData = {};
     $scope.doLogin = function () {
