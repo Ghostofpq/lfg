@@ -112,6 +112,11 @@
             <artifactId>joda-time</artifactId>
             <version>${joda.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongeez</groupId>
+            <artifactId>mongeez</artifactId>
+            <version>0.9.4</version>
+        </dependency>
         <!-- LOGS -->
         <dependency>
             <groupId>org.slf4j</groupId>
