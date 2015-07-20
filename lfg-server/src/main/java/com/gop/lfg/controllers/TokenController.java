@@ -1,11 +1,15 @@
 package com.gop.lfg.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
+import com.gop.lfg.exceptions.CustomBadRequestException;
 import com.gop.lfg.exceptions.CustomInvalidLoginOrPasswordException;
+import com.gop.lfg.exceptions.CustomNotFoundException;
+import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.services.JwtService;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
@@ -16,16 +20,15 @@ import org.jose4j.jwe.JsonWebEncryption;
 import org.jose4j.jwe.KeyManagementAlgorithmIdentifiers;
 import org.jose4j.keys.AesKey;
 import org.jose4j.lang.ByteUtil;
+import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;
@@ -51,7 +54,7 @@ public class TokenController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody
-    public EncodedToken create(@RequestBody final TokenRequest tokenRequest) throws Exception {
+    public EncodedToken create(@RequestBody final TokenRequest tokenRequest) throws CustomNotFoundException, CustomBadRequestException, JoseException, JsonProcessingException {
         User user = userService.getByLogin(tokenRequest.getLogin());
         final String encodedPassword = shaEncoder.encodePassword(tokenRequest.getPassword(), user.getSalt());
         if (!user.getEncodedPassword().equals(encodedPassword)) {
@@ -88,5 +91,22 @@ public class TokenController {
     public Token get() throws Exception {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return tokenService.getByAccessToken((String) authentication.getDetails());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CustomNotFoundException.class)
+    @ResponseBody
+    private ErrorMessage handleNotFoundException(CustomNotFoundException e) {
+        log.error(HttpStatus.NOT_FOUND + ":" + e.getMessage());
+        return new ErrorMessage(e.getMessage());
+    }
+
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({CustomBadRequestException.class,JoseException.class,JsonProcessingException.class})
+    @ResponseBody
+    private ErrorMessage handleBadRequestException(CustomBadRequestException e) {
+        log.error(HttpStatus.BAD_REQUEST + ":" + e.getMessage());
+        return new ErrorMessage(e.getMessage());
     }
 }

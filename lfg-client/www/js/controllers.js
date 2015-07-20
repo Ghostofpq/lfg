@@ -76,7 +76,12 @@ angular.module('lfg.controllers', [])
     $scope.loginData = {};
     $scope.doLogin = function () {
         console.log('Doing login', $scope.loginData);
-        $lfgRest.createToken($scope.loginData.login, $scope.loginData.password)
+        var login = $scope.loginData.login;
+        var pass = $scope.loginData.password;
+
+        $scope.loginData.password = "";
+
+        $lfgRest.createToken(login, pass)
             .success(function (res) {
                 console.log(res);
                 $lfgRest.setToken(res);
@@ -87,39 +92,50 @@ angular.module('lfg.controllers', [])
                     })
                     .error(function (getUserError) {
                         console.log(getUserError);
-                        $scope.error = getUserError.status + " : " + getUserError.error;
+                        $scope.error = err.message;
                     });
             })
             .error(function (err) {
                 console.log(err);
-                $scope.error = err.status + " : " + err.error;
+                $scope.error = err.message;
             });
     };
 })
 
-.controller('SignUpCtrl', function ($scope, $ionicModal, $timeout, $auth, $location) {
+.controller('SignUpCtrl', function ($scope, $ionicModal, $timeout, $lfgRest, $location) {
     console.log("SignUpCtrl");
     $scope.signUpData = {};
     $scope.doSignUp = function () {
         console.log('Doing SignUp', $scope.signUpData);
-        $auth.createToken($scope.signUpData.login, $scope.signUpData.password)
-            .success(function (res) {
-                console.log(res);
-                $auth.setToken(res);
-                $auth.logIn()
-                    .success(function (getUserResponse) {
-                        $auth.setUser(getUserResponse);
-                        $location.path("/playlists");
-                    })
-                    .error(function (getUserError) {
-                        console.log(getUserError);
-                        $scope.error = getUserError.status + " : " + getUserError.error;
-                    });;
-            })
-            .error(function (err) {
-                console.log(err);
-                $scope.error = err.status + " : " + err.error;
-            });
+        if (!($scope.signUpData.password === $scope.signUpData.repeatPassword)) {
+            $scope.signUpData.password = "";
+            $scope.signUpData.repeatPassword = "";
+            $scope.error = "Password and Repeat Password should be the same";
+        } else {
+            var login = $scope.signUpData.login;
+            var pass = $scope.signUpData.password;
+            var email = $scope.signUpData.email;
+            $scope.signUpData.password = "";
+            $scope.signUpData.repeatPassword ="";
+                $lfgRest.registerUser(login, pass, email)
+                .success(function (registerUserResponse) {
+                    $lfgRest.setUserLocal(registerUserResponse);
+                    $lfgRest.createToken(login, pass)
+                        .success(function (createTokenResponse) {
+                            console.log(createTokenResponse);
+                            $lfgRest.setToken(createTokenResponse);
+                            $location.path("/playlist");
+                        })
+                        .error(function (err) {
+                            console.log(err);
+                            $scope.error = err.message;
+                        });
+                })
+                .error(function (registerUserErr) {
+                    console.log(registerUserErr);
+                    $scope.error = registerUserErr.message;
+                });
+        }
     };
 })
 

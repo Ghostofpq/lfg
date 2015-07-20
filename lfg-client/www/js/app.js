@@ -45,7 +45,7 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
             .state('signup', {
                 url: "/signup",
                 templateUrl: "templates/signup.html",
-                controller: 'SignupCtrl'
+                controller: 'SignUpCtrl'
             })
 
             .state('app.search', {

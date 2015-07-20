@@ -89,8 +89,12 @@ angular.module('lfg.rest', [])
                                 login: login
                             }
                         );
+                    },
+                    // UTILS
+                    isLoginFree: function (login) {
+                        console.log("$lfgRest.isLoginFree");
+                        return $http.get(BASE_URL + '/utils/isLoginFree/'+login);
                     }
-
 
                 };
             }
