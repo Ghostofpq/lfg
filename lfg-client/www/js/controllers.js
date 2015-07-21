@@ -57,7 +57,7 @@ angular.module('lfg.controllers', [])
 
 })
 
-.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $location, $lfgRest) {
+.controller('LoginCtrl', function ($scope, $ionicModal, $timeout, $lfgRest, $state) {
     console.log("LoginCtrl");
 
     if ($lfgRest.hasToken()) {
@@ -65,7 +65,7 @@ angular.module('lfg.controllers', [])
         $lfgRest.getUser()
             .success(function (res) {
                 $lfgRest.setUserLocal(res);
-                $location.path("/playlist");
+                $state.go('app.playlists');
             })
             .error(function (err) {
                 $scope.error = err.status + " : " + err.error;
@@ -88,7 +88,7 @@ angular.module('lfg.controllers', [])
                 $lfgRest.getUser()
                     .success(function (getUserResponse) {
                         $lfgRest.setUserLocal(res);
-                        $location.path("/playlist");
+                        $state.go('app.playlists');
                     })
                     .error(function (getUserError) {
                         console.log(getUserError);
@@ -100,9 +100,12 @@ angular.module('lfg.controllers', [])
                 $scope.error = err.message;
             });
     };
+    $scope.goToSignUp = function () {
+        $state.go('signup');
+    };
 })
 
-.controller('SignUpCtrl', function ($scope, $ionicModal, $timeout, $lfgRest, $location) {
+.controller('SignUpCtrl', function ($scope, $ionicModal, $timeout, $lfgRest, $state) {
     console.log("SignUpCtrl");
     $scope.signUpData = {};
     $scope.doSignUp = function () {
@@ -116,15 +119,15 @@ angular.module('lfg.controllers', [])
             var pass = $scope.signUpData.password;
             var email = $scope.signUpData.email;
             $scope.signUpData.password = "";
-            $scope.signUpData.repeatPassword ="";
-                $lfgRest.registerUser(login, pass, email)
+            $scope.signUpData.repeatPassword = "";
+            $lfgRest.registerUser(login, pass, email)
                 .success(function (registerUserResponse) {
                     $lfgRest.setUserLocal(registerUserResponse);
                     $lfgRest.createToken(login, pass)
                         .success(function (createTokenResponse) {
                             console.log(createTokenResponse);
                             $lfgRest.setToken(createTokenResponse);
-                            $location.path("/playlist");
+                            $state.go('app.playlists');
                         })
                         .error(function (err) {
                             console.log(err);
@@ -136,6 +139,9 @@ angular.module('lfg.controllers', [])
                     $scope.error = registerUserErr.message;
                 });
         }
+    };
+    $scope.goToLogin = function () {
+        $state.go('login');
     };
 })
 
