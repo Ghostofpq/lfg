@@ -15,10 +15,6 @@ import java.util.*;
 @Data
 @Document(collection = "users")
 public class User {
-    public final static String FIELD_LOGIN = "login";
-    public final static String FIELD_PASSWORD = "password";
-    public final static String FIELD_EMAIL = "email";
-
     public final static String ROLE_USER = "user";
     public final static String ROLE_ADMIN = "admin";
 
@@ -26,6 +22,8 @@ public class User {
         tokens = new HashMap<>();
         profiles = new HashSet<>();
         roles = new HashSet<>();
+        follows = new HashSet<>();
+        followers             = new HashSet<>();
         roles.add(ROLE_USER);
     }
 
@@ -48,6 +46,8 @@ public class User {
 
     private Map<String, String> tokens;
     private Set<String> profiles;
+    private Set<String> follows;
+    private Set<String> followers;
 
     public void setPassword(String password) {
         final Random r = new SecureRandom();

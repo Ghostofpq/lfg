@@ -1,5 +1,6 @@
 package com.gop.lfg.controllers;
 
+import com.google.common.base.Strings;
 import com.gop.lfg.data.models.User;
 import com.gop.lfg.exceptions.CustomBadRequestException;
 import com.gop.lfg.exceptions.CustomNotFoundException;
@@ -7,6 +8,7 @@ import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import com.gop.lfg.utils.UserCreationRequest;
+import com.gop.lfg.utils.UserUpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +40,47 @@ public class UserController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
-    public User create(@RequestBody final UserCreationRequest userToCreate) throws CustomBadRequestException {
-        log.debug("In create with {}", userToCreate.toString());
+    public User create(@RequestBody final UserCreationRequest userCreationRequest) throws CustomBadRequestException {
+        log.debug("In create with {}", userCreationRequest.toString());
         final User user = new User();
-        // Set Login
-        user.setLogin(userToCreate.getLogin());
-        // Set Email
-        user.setEmail(userToCreate.getEmail());
-        // Set Password
-        user.setPassword(userToCreate.getPassword());
-        // Save
+        // LOGIN
+        if (!Strings.isNullOrEmpty(userCreationRequest.getLogin())) {
+            if (userService.loginIsFreeToUse(userCreationRequest.getLogin())) {
+                user.setLogin(userCreationRequest.getLogin());
+            } else {
+                throw new CustomBadRequestException("Login is already used");
+            }
+        } else {
+            throw new CustomBadRequestException("User creation request need a login");
+        }
+        // EMAIL
+        if (!Strings.isNullOrEmpty(userCreationRequest.getEmail())) {
+            if (userService.emailIsFreeToUse(userCreationRequest.getEmail())) {
+                user.setEmail(userCreationRequest.getEmail());
+            } else {
+                throw new CustomBadRequestException("Email is already used");
+            }
+        } else {
+            throw new CustomBadRequestException("User creation request need an email");
+        }
+        // PASSWORD
+        if (!Strings.isNullOrEmpty(userCreationRequest.getPassword())) {
+            user.setPassword(userCreationRequest.getPassword());
+        } else {
+            throw new CustomBadRequestException("User creation request need a password");
+        }
         return userService.add(user);
+    }
+
+    @RequestMapping(value = "/follow/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public User follow(@PathVariable("id") final String otherId) throws CustomNotFoundException, CustomBadRequestException {
+        final User user = getSelf();
+        final User other = get(otherId);
+        user.getFollows().add(otherId);
+        other.getFollowers().add(user.getId());
+        userService.update(other);
+        return userService.update(user);
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.GET)
@@ -71,44 +103,28 @@ public class UserController {
     @ResponseBody
     public User update(
             @PathVariable("id") final String id,
-            @RequestBody final Map<String, Object> fields)
+            @RequestBody final UserUpdateRequest userUpdateRequest)
             throws CustomNotFoundException,
             CustomBadRequestException {
         final User user = userService.get(id);
-        for (final String key : fields.keySet()) {
-            updateFieldForUser(user, key, fields.get(key));
+        if (!Strings.isNullOrEmpty(userUpdateRequest.getLogin())) {
+            if (userService.loginIsFreeToUse(userUpdateRequest.getLogin())) {
+                user.setLogin(userUpdateRequest.getLogin());
+            } else {
+                throw new CustomBadRequestException("Login is already used");
+            }
+        }
+        if (!Strings.isNullOrEmpty(userUpdateRequest.getEmail())) {
+            if (userService.emailIsFreeToUse(userUpdateRequest.getEmail())) {
+                user.setEmail(userUpdateRequest.getEmail());
+            } else {
+                throw new CustomBadRequestException("Email is already used");
+            }
+        }
+        if (!Strings.isNullOrEmpty(userUpdateRequest.getPassword())) {
+            user.setPassword(userUpdateRequest.getPassword());
         }
         return userService.update(user);
-    }
-
-    @RequestMapping(value = "/{id}/{field}", method = RequestMethod.PUT)
-    @ResponseBody
-    public User updateField(
-            @PathVariable("id") final String id,
-            @PathVariable("field") final String field,
-            @RequestBody final Object value)
-            throws CustomNotFoundException,
-            CustomBadRequestException {
-        final User user = userService.get(id);
-        updateFieldForUser(user, field, value);
-        return userService.update(user);
-    }
-
-    private void updateFieldForUser(final User user, final String field, final Object value) {
-        switch (field) {
-            case User.FIELD_LOGIN:
-                user.setLogin((String) value);
-                break;
-            case User.FIELD_PASSWORD:
-                user.setPassword((String) value);
-                break;
-            case User.FIELD_EMAIL:
-                user.setEmail((String) value);
-                break;
-            default:
-                log.error("Unknown field {}", field);
-                break;
-        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

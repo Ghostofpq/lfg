@@ -1,9 +1,6 @@
 package com.gop.lfg.data.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -32,7 +29,7 @@ public class Token {
     private long expiresAt;
     private Set<String> roles;
 
-    public Token(User user) {
+    public Token(final User user) {
         final Random randomSeed = new SecureRandom();
         this.accessToken = new BigInteger(130, randomSeed).toString(64);
         this.tokenRefresh = new BigInteger(130, randomSeed).toString(32);

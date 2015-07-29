@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,10 +40,6 @@ public class TokenControllerIT {
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8")
     );
-    public static final MediaType TEXT_PLAIN_UTF8 = new MediaType(MediaType.TEXT_PLAIN.getType(),
-            MediaType.TEXT_PLAIN.getSubtype(),
-            Charset.forName("utf8")
-    );
 
     @Value("${local.server.port}")
     private String localPort;
@@ -58,7 +55,7 @@ public class TokenControllerIT {
 
     @PostConstruct
     private void init() {
-        template = new RestTemplate();
+        template = new TestRestTemplate();
         baseURI = "http://localhost:" + localPort;
         cleanDatabases();
     }

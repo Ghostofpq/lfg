@@ -70,7 +70,7 @@ public class TokenController {
         userService.update(user);
         // Clean previous tokens
         for (final Token t : tokenService.getByUser(user.getId())) {
-            if (user.getTokens().containsValue(t.getId())) {
+            if (!user.getTokens().containsValue(t.getId())) {
                 tokenService.delete(t.getId());
                 log.debug(t.toString() + " was removed");
             }
@@ -96,7 +96,7 @@ public class TokenController {
 
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ResponseBody
-    public Token get() throws Exception {
+    public Token get() throws CustomNotFoundException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return tokenService.getByAccessToken((String) authentication.getDetails());
     }

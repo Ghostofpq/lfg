@@ -84,26 +84,8 @@ public class ProfileController {
             throws CustomNotFoundException,
             CustomBadRequestException {
         final Profile profile = profileService.get(id);
-        for (final String key : fields.keySet()) {
-            updateFieldForProfile(profile, key, fields.get(key));
-        }
+        // TODO
         return profileService.update(profile);
     }
 
-    private void updateFieldForProfile(final Profile profile, final String field, final Object value) {
-        switch (field) {
-            case Profile.FIELD_LEVEL:
-                profile.setLevel((Float) value);
-                break;
-            case Profile.FIELD_LOCATION:
-                profile.setLocation((Location) value);
-                break;
-            case MusicianProfile.FIELD_CAN_TUTOR:
-                ((MusicianProfile) profile).setCanTutor((boolean) value);
-                break;
-            default:
-                log.error("Unknown field {}", field);
-                break;
-        }
-    }
 }

@@ -22,7 +22,7 @@ public class TokenService {
         log.info("TokenService started !");
     }
 
-    public Token add(Token token) throws CustomBadRequestException {
+    public Token add(final Token token) throws CustomBadRequestException {
         log.trace("add : {}", token);
         try {
             return tokenRepository.save(token);
@@ -54,7 +54,7 @@ public class TokenService {
         return tokenRepository.findByUserId(userId);
     }
 
-    public Token update(Token token) throws CustomBadRequestException {
+    public Token update(final Token token) throws CustomBadRequestException {
         log.trace("update : {}", token);
         try {
             return tokenRepository.save(token);

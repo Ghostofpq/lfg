@@ -52,7 +52,15 @@ public class UserService {
         throw new CustomNotFoundException(login);
     }
 
-    public User update(User user) throws CustomBadRequestException {
+    public boolean loginIsFreeToUse(final String login) {
+        return userRepository.findByLogin(login) == null;
+    }
+
+    public boolean emailIsFreeToUse(final String email) {
+        return userRepository.findByEmail(email) == null;
+    }
+
+    public User update(final User user) throws CustomBadRequestException {
         try {
             user.setUpdateTs(DateTime.now().getMillis());
             return userRepository.save(user);

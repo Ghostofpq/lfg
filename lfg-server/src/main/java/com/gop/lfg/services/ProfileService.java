@@ -21,7 +21,7 @@ public class ProfileService {
         log.info("ProfileService started !");
     }
 
-    public Profile add(Profile profile) throws CustomBadRequestException {
+    public Profile add(final Profile profile) throws CustomBadRequestException {
         log.trace("add : {}", profile);
         try {
             return profileRepository.save(profile);
@@ -39,7 +39,7 @@ public class ProfileService {
         throw new CustomNotFoundException(id);
     }
 
-    public Profile update(Profile profile) throws CustomBadRequestException {
+    public Profile update(final Profile profile) throws CustomBadRequestException {
         log.trace("update : {}", profile);
         try {
             return profileRepository.save(profile);

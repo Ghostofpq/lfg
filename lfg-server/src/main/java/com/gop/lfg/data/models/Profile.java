@@ -9,18 +9,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "profiles")
 public abstract class Profile {
     @Id
-    private String id;
-    private ProfileType profileType;
-    private String userId;
-    private Float level;
-    private Location location;
-
-    public final static String FIELD_LOCATION = "location";
-    public final static String FIELD_LEVEL = "level";
+    protected String id;
+    protected ProfileType profileType;
+    protected String userId;
+    protected Float level;
+    protected Location location;
 
     public enum ProfileType {
         MUSICIAN("musician"),
-        BOARGAME("boardgame");
+        BOARGAME("boardgame"),
+        SPORTS("sports");
 
         private String textValue;
 
