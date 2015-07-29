@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -67,6 +68,13 @@ public class TokenController {
         }
         user.getTokens().put(tokenRequest.getNickname(), token.getId());
         userService.update(user);
+        // Clean previous tokens
+        for (final Token t : tokenService.getByUser(user.getId())) {
+            if (user.getTokens().containsValue(t.getId())) {
+                tokenService.delete(t.getId());
+                log.debug(t.toString() + " was removed");
+            }
+        }
 
         return jwtService.encode(token);
     }
@@ -103,7 +111,7 @@ public class TokenController {
 
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({CustomBadRequestException.class,JoseException.class,JsonProcessingException.class})
+    @ExceptionHandler({CustomBadRequestException.class, JoseException.class, JsonProcessingException.class})
     @ResponseBody
     private ErrorMessage handleBadRequestException(CustomBadRequestException e) {
         log.error(HttpStatus.BAD_REQUEST + ":" + e.getMessage());

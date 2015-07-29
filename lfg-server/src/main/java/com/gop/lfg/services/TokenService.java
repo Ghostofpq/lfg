@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Slf4j
 @Component("TokenService")
@@ -46,6 +47,11 @@ public class TokenService {
             return token;
         }
         throw new CustomNotFoundException(accessToken);
+    }
+
+    public List<Token> getByUser(final String userId) throws CustomNotFoundException {
+        log.trace("getByUser : {}", userId);
+        return tokenRepository.findByUserId(userId);
     }
 
     public Token update(Token token) throws CustomBadRequestException {

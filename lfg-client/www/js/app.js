@@ -4,9 +4,9 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
+angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies', 'lfg.rest', 'uiGmapgoogle-maps'])
 
-    .run(function ($ionicPlatform) {
+.run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -19,141 +19,52 @@ angular.module('lfg', ['ionic', 'lfg.controllers', 'ngCookies','lfg.rest'])
             }
         });
     })
-    .config(function($httpProvider) {
+    .config(function ($httpProvider) {
         //Enable cross domain calls
-        $httpProvider.defaults.headers.common = {'Content-Type':'application/json'};
+        $httpProvider.defaults.headers.common = {
+            'Content-Type': 'application/json'
+        };
         $httpProvider.defaults.headers.post = {};
         $httpProvider.defaults.headers.put = {};
         $httpProvider.defaults.headers.patch = {};
     })
-    .config(function ($stateProvider, $urlRouterProvider) {
+    .config(function ($stateProvider, $urlRouterProvider, uiGmapGoogleMapApiProvider) {
+        uiGmapGoogleMapApiProvider.configure({
+            key: 'AIzaSyAAxXBOM-YQwfze9hn9iCCRmo2z5TPjtzQ',
+            v: '3.17',
+            libraries: '',
+            language: 'en',
+            sensor: 'false',
+        })
         $stateProvider
 
             .state('app', {
-                url: "/app",
-                abstract: true,
-                templateUrl: "templates/menu.html",
-                controller: 'AppCtrl'
-            })
-        
-            .state('login', {
-                url: "/login",
-                templateUrl: "templates/login.html",
-                controller: 'LoginCtrl'
-            })
-        
-            .state('signup', {
-                url: "/signup",
-                templateUrl: "templates/signup.html",
-                controller: 'SignUpCtrl'
-            })
+            url: "/app",
+            abstract: true,
+            templateUrl: "templates/menu.html",
+            controller: 'AppCtrl'
+        })
 
-            .state('app.search', {
-                url: "/search",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/search.html"
-                    }
-                }
-            })
+        .state('login', {
+            url: "/login",
+            templateUrl: "templates/login.html",
+            controller: 'LoginCtrl'
+        })
 
-            .state('app.browse', {
-                url: "/browse",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/browse.html"
-                    }
-                }
-            })
-            .state('app.playlists', {
-                url: "/playlists",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/playlists.html",
-                        controller: 'PlaylistsCtrl'
-                    }
-                }
-            })
+        .state('signup', {
+            url: "/signup",
+            templateUrl: "templates/signup.html",
+            controller: 'SignUpCtrl'
+        })
 
-            .state('app.single', {
-                url: "/playlists/:playlistId",
-                views: {
-                    'menuContent': {
-                        templateUrl: "templates/playlist.html",
-                        controller: 'PlaylistCtrl'
-                    }
+        .state('app.search', {
+            url: "/search",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/search.html"
                 }
-            });
-        // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/app/playlists');
-    })
-
-    .provider("$auth", function () {
-        return {
-            $get: function ($location, $lfgRest,$window) {
-                return {
-                    isLoggedIn: function () {
-                        console.log("$auth.isLoggedIn");
-                        return !angular.equals({},this.getUser());
-                    },
-                    logIn: function () {
-                        console.log("$auth.logIn");
-                        if ($lfgRest.hasToken()) {
-                            return $lfgRest.getUser();
-                        }
-                    },
-                    createToken: function (login, password) {
-                        console.log("$auth.createToken");
-                        return $lfgRest.createToken(login, password)
-                            .success(function (res) {
-                                $lfgRest.setToken(res);
-                                $lfgRest.getUser()
-                                    .success(function (getUserResponse) {
-                                        this.setUser(getUserResponse);
-                                        console.log("OK:"+user);
-                                        return true;
-                                    }).error(function (getUserError) {
-                                        this.setUser({});
-                                        console.log(getUserError);
-                                        console.log("KO:"+getUserError);
-                                        return false;
-                                    });
-                                ;
-                            }).error(function (err) {
-                                this.setUser({});
-                                console.log(err);
-                                return false;
-                            });
-                    },
-                    setToken:function(token){
-                        console.log("$auth.setToken");
-                        $lfgRest.setToken(token);
-                    },
-                    getUser:function(){
-                        console.log("$auth.getUser");
-                        return JSON.parse($window.localStorage["user"]|| "{}");
-                    },
-                    setUser:function(newUser){
-                        console.log("$auth.setUser");
-                        $window.localStorage["user"] = JSON.stringify(newUser);
-                    },
-                    logOut: function () {
-                        console.log("$auth.logOut");
-                        $window.localStorage["user"] = {};
-                        $location.path("/app/login");
-                    },
-                    register: function (login, password, email) {
-                        console.log("$auth.register");
-                        $lfgRest.registerUser(login, password, email)
-                            .success(function (res) {
-                                createToken(res.login, res.password);
-                            }).error(function (err) {
-                                console.log(err);
-                            });
-                    }
-                };
             }
-        };
-    });
-
-
+        });
+        // if none of the above states are matched, use this as the fallback
+        $urlRouterProvider.otherwise('/app/search');
+    })
