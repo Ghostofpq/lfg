@@ -57,8 +57,7 @@ public class TokenController {
     @ResponseBody
     public EncodedToken create(@RequestBody final TokenRequest tokenRequest) throws CustomNotFoundException, CustomBadRequestException, JoseException, JsonProcessingException {
         User user = userService.getByLogin(tokenRequest.getLogin());
-        final String encodedPassword = shaEncoder.encodePassword(tokenRequest.getPassword(), user.getSalt());
-        if (!user.getEncodedPassword().equals(encodedPassword)) {
+        if (!user.isPassword(tokenRequest.getPassword())) {
             throw new CustomInvalidLoginOrPasswordException("Invalid login or Password");
         }
         Token token = new Token(user);

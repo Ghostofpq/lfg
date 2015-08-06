@@ -181,6 +181,8 @@ public class UserControllerIT {
         assertEquals(user3Email, userCreationRequest.getBody().getEmail());
     }
 
+
+
     private void logTestName(final String testName) {
         final StringBuilder text = new StringBuilder();
         text.append(System.lineSeparator());

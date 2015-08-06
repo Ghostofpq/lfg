@@ -23,7 +23,7 @@ public class User {
         profiles = new HashSet<>();
         roles = new HashSet<>();
         follows = new HashSet<>();
-        followers             = new HashSet<>();
+        followers = new HashSet<>();
         roles.add(ROLE_USER);
     }
 
@@ -53,7 +53,11 @@ public class User {
         final Random r = new SecureRandom();
         byte[] salt = new byte[32];
         r.nextBytes(salt);
-        setSalt(new String(salt));
+        setSalt(new String(org.springframework.security.crypto.codec.Base64.encode(salt)));
         setEncodedPassword(new ShaPasswordEncoder(256).encodePassword(password, getSalt()));
+    }
+
+    public boolean isPassword(String password) {
+        return new ShaPasswordEncoder(256).isPasswordValid(encodedPassword, password, salt);
     }
 }
