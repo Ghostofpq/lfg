@@ -25,9 +25,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationEntryPo
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         final  ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
         if (e instanceof CustomExpiredTokenExceptionException) {
-            httpServletResponse.setStatus(418);
+            httpServletResponse.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         } else {
-            httpServletResponse.setStatus(403);
+            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         httpServletResponse.getOutputStream().print(mapper.writeValueAsString(errorMessage));
     }

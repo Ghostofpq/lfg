@@ -141,7 +141,7 @@ public class UserControllerIT {
         final String user3Email = "user3email";
         final String user3Login = "user3Login";
         final String user3Password = "user3Password";
-        final String emptyString ="";
+        final String emptyString = "";
 
         final ResponseEntity<User> userCreationRequestNoLogin = template
                 .postForEntity(baseURI + "/api/user", new UserCreationRequest(null, null, null), User.class);
@@ -173,12 +173,30 @@ public class UserControllerIT {
         assertEquals(userCreationRequestEmptyPassword.getStatusCode(), HttpStatus.BAD_REQUEST);
         assertEquals(userCreationRequestEmptyPassword.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
 
+        final ResponseEntity<User> userCreationRequestLoginAlreadyUsed = template
+                .postForEntity(baseURI + "/api/user", new UserCreationRequest(USER_1_LOGIN, user3Email, emptyString), User.class);
+        assertEquals(userCreationRequestLoginAlreadyUsed.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(userCreationRequestLoginAlreadyUsed.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+
+        final ResponseEntity<User> userCreationRequestEmailAlreadyUsed = template
+                .postForEntity(baseURI + "/api/user", new UserCreationRequest(user3Login, USER_1_EMAIL, emptyString), User.class);
+        assertEquals(userCreationRequestEmailAlreadyUsed.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(userCreationRequestEmailAlreadyUsed.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+
         final ResponseEntity<User> userCreationRequest = template
                 .postForEntity(baseURI + "/api/user", new UserCreationRequest(user3Login, user3Email, user3Password), User.class);
         assertEquals(HttpStatus.OK, userCreationRequest.getStatusCode());
-        assertEquals(APPLICATION_JSON_UTF8, userCreationRequestEmptyPassword.getHeaders().getContentType());
+        assertEquals(APPLICATION_JSON_UTF8, userCreationRequest.getHeaders().getContentType());
         assertEquals(user3Login, userCreationRequest.getBody().getLogin());
         assertEquals(user3Email, userCreationRequest.getBody().getEmail());
+    }
+
+    @Test
+    public void userFollowsTest(){
+        final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
+        final ResponseEntity<EncodedToken> tokenCreationResponse = template
+                .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
+
     }
 
     private void logTestName(final String testName) {

@@ -183,12 +183,9 @@ public class TokenControllerIT {
         final HttpHeaders headers = new HttpHeaders();
         headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
         final HttpEntity entity = new HttpEntity<>(headers);
-        try {
-            template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, ErrorMessage.class);
-            assertTrue(false);
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("418"));
-        }
+        final ResponseEntity<User> getUserResponse = template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, User.class);
+        assertEquals(HttpStatus.NOT_ACCEPTABLE, getUserResponse.getStatusCode());
+        assertEquals(getUserResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
     }
 
     private void logTestName(final String testName) {
