@@ -1,6 +1,7 @@
 package com.gop.lfg.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
@@ -36,6 +37,7 @@ public class JwtService {
         jwe.setAlgorithmHeaderValue(keyManagementAlgorithm);
         jwe.setEncryptionMethodHeaderParameter(contentEncryptionAlgorithm);
         jwe.setKey(key);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     public EncodedToken encode(Token o) throws JsonProcessingException, JoseException {

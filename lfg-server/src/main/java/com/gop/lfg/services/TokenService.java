@@ -54,6 +54,16 @@ public class TokenService {
         return tokenRepository.findByUserId(userId);
     }
 
+    public Token refreshToken(final String refreshToken) throws CustomNotFoundException {
+        log.trace("refresh : {}", refreshToken);
+        final Token token = tokenRepository.findByRefreshToken(refreshToken);
+        if (token != null) {
+            token.refresh();
+            return tokenRepository.save(token);
+        }
+        throw new CustomNotFoundException(refreshToken);
+    }
+
     public Token update(final Token token) throws CustomBadRequestException {
         log.trace("update : {}", token);
         try {

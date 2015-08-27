@@ -17,6 +17,7 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Deprecated
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     final ObjectMapper mapper = new ObjectMapper();
 

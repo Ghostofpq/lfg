@@ -1,9 +1,8 @@
 package com.gop.lfg.exceptions;
 
-/**
- * @author GhostOfPQ
- */
-public class CustomNotAuthorizedException extends Exception {
+import java.io.IOException;
+
+public class CustomNotAuthorizedException extends IOException {
     public CustomNotAuthorizedException() {
         super("You don't have the rights to access this page");
     }

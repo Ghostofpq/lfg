@@ -2,15 +2,15 @@ package com.gop.lfg.security;
 
 import com.google.common.base.Strings;
 import com.gop.lfg.data.models.Token;
-import com.gop.lfg.exceptions.CustomExpiredTokenExceptionException;
+import com.gop.lfg.exceptions.CustomNotFoundException;
 import com.gop.lfg.services.JwtService;
+import com.gop.lfg.services.TokenService;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.jose4j.lang.JoseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,10 +21,12 @@ import java.io.IOException;
 public class CustomAuthenticationFilter implements Filter {
     public static final String HEADER_TOKEN = "x-token";
 
-    @Autowired
+    @Inject
     private JwtService jwtService;
-    @Autowired
-    private CustomAuthenticationFailureHandler failureHandler;
+    //@Inject
+    //private CustomAuthenticationFailureHandler failureHandler;
+    @Inject
+    private TokenService tokenService;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -45,20 +47,19 @@ public class CustomAuthenticationFilter implements Filter {
 
         // Get the access token in the header
         final String encodedToken = httpServletRequest.getHeader(HEADER_TOKEN);
-        log.trace(HEADER_TOKEN + ":"+encodedToken);
+        log.trace(HEADER_TOKEN + ":" + encodedToken);
         if (!Strings.isNullOrEmpty(encodedToken)) {
             try {
-                final Token token = jwtService.decode(encodedToken);
-                if (DateTime.now().isAfter(token.getExpiresAt())) {
-                    failureHandler.commence(httpServletRequest, httpServletResponse,
-                            new CustomExpiredTokenExceptionException("Token Expired"));
+                Token token = jwtService.decode(encodedToken);
+                if (!token.isValid()) {
+                    token = tokenService.refreshToken(token.getRefreshToken());
+                    httpServletResponse.setHeader(HEADER_TOKEN, jwtService.encode(token).getValue());
                 }
-                // Create the authentication with this token
                 SecurityContextHolder.getContext().setAuthentication(new CustomAuthentication(token));
-            } catch (JoseException e) {
-                log.trace("JoseException", e);
-                failureHandler.commence(httpServletRequest, httpServletResponse,
-                        new CustomAuthenticationException("InvalidToken"));
+            } catch (JoseException | CustomNotFoundException e) {
+                log.trace("Exception", e);
+                httpServletResponse.setHeader(HEADER_TOKEN, "");
+                SecurityContextHolder.getContext().setAuthentication(null);
             }
         }
         chain.doFilter(req, res);

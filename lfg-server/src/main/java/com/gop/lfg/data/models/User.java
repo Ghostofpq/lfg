@@ -5,13 +5,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.codec.Base64;
 
 import java.security.SecureRandom;
 import java.util.*;
 
-/**
- * @author GhostOfPQ
- */
 @Data
 @Document(collection = "users")
 public class User {
@@ -53,7 +51,7 @@ public class User {
         final Random r = new SecureRandom();
         byte[] salt = new byte[32];
         r.nextBytes(salt);
-        setSalt(new String(org.springframework.security.crypto.codec.Base64.encode(salt)));
+        setSalt(new String(Base64.encode(salt)));
         setEncodedPassword(new ShaPasswordEncoder(256).encodePassword(password, getSalt()));
     }
 

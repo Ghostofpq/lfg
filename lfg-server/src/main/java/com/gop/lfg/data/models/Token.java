@@ -1,6 +1,9 @@
 package com.gop.lfg.data.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -19,10 +22,10 @@ import java.util.Set;
 public class Token {
     @Id
     private String id;
-    @Indexed
+    @Indexed(unique = true)
     private String accessToken;
-    @Indexed
-    private String tokenRefresh;
+    @Indexed(unique = true)
+    private String refreshToken;
     @Indexed
     private String userId;
     private long issuedAt;
@@ -31,13 +34,28 @@ public class Token {
 
     public Token(final User user) {
         final Random randomSeed = new SecureRandom();
-        this.accessToken = new BigInteger(130, randomSeed).toString(64);
-        this.tokenRefresh = new BigInteger(130, randomSeed).toString(32);
 
         this.userId = user.getId();
         this.roles = user.getRoles();
 
+        this.accessToken = new BigInteger(130, randomSeed).toString(64);
+        this.refreshToken = new BigInteger(130, randomSeed).toString(32);
+
         this.issuedAt = DateTime.now().getMillis();
         this.expiresAt = issuedAt + 1000 * 60 * 60; //1h
+    }
+
+    public void refresh() {
+        final Random randomSeed = new SecureRandom();
+
+        this.accessToken = new BigInteger(130, randomSeed).toString(64);
+        this.refreshToken = new BigInteger(130, randomSeed).toString(32);
+
+        this.issuedAt = DateTime.now().getMillis();
+        this.expiresAt = issuedAt + 1000 * 60 * 60; //1h
+    }
+
+    public boolean isValid() {
+        return DateTime.now().getMillis() < expiresAt;
     }
 }

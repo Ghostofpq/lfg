@@ -30,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private TokenService tokenService;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private CustomAuthenticationFailureHandler failureHandler;
+    //@Autowired
+    //private CustomAuthenticationFailureHandler failureHandler;
     @Autowired
     private CustomAuthenticationFilter authenticationFilter;
 
@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // API secured (all except whitelist)
         http.authorizeRequests().antMatchers("/api/**").authenticated();
 
-        http.exceptionHandling().authenticationEntryPoint(failureHandler);
+        //http.exceptionHandling().authenticationEntryPoint(failureHandler);
         http.addFilterBefore(authenticationFilter, AnonymousAuthenticationFilter.class);
 
     }

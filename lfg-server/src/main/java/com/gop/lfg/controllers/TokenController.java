@@ -1,25 +1,16 @@
 package com.gop.lfg.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.gop.lfg.data.models.EncodedToken;
 import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
-import com.gop.lfg.exceptions.CustomBadRequestException;
-import com.gop.lfg.exceptions.CustomInvalidLoginOrPasswordException;
-import com.gop.lfg.exceptions.CustomNotFoundException;
-import com.gop.lfg.exceptions.ErrorMessage;
+import com.gop.lfg.exceptions.*;
 import com.gop.lfg.services.JwtService;
 import com.gop.lfg.services.TokenService;
 import com.gop.lfg.services.UserService;
 import com.gop.lfg.utils.TokenRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
-import org.jose4j.jwe.JsonWebEncryption;
-import org.jose4j.jwe.KeyManagementAlgorithmIdentifiers;
-import org.jose4j.keys.AesKey;
-import org.jose4j.lang.ByteUtil;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,8 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.security.Key;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -83,7 +72,7 @@ public class TokenController {
     public EncodedToken refresh(@RequestBody final EncodedToken token) throws Exception {
         final Token decodedToken = jwtService.decode(token.getValue());
         final Token storedToken = tokenService.getByAccessToken(decodedToken.getAccessToken());
-        if (!decodedToken.getTokenRefresh().equals(storedToken.getTokenRefresh())) {
+        if (!decodedToken.getRefreshToken().equals(storedToken.getRefreshToken())) {
             throw new CustomInvalidLoginOrPasswordException("Invalid refresh");
         }
         User user = userService.get(decodedToken.getId());

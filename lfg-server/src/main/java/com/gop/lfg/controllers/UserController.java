@@ -3,6 +3,7 @@ package com.gop.lfg.controllers;
 import com.google.common.base.Strings;
 import com.gop.lfg.data.models.User;
 import com.gop.lfg.exceptions.CustomBadRequestException;
+import com.gop.lfg.exceptions.CustomNotAuthorizedException;
 import com.gop.lfg.exceptions.CustomNotFoundException;
 import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.services.TokenService;
@@ -165,6 +166,14 @@ public class UserController {
     @ResponseBody
     private ErrorMessage handleBadRequestException(CustomBadRequestException e) {
         log.error(HttpStatus.BAD_REQUEST + ":" + e.getMessage());
+        return new ErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(CustomNotAuthorizedException.class)
+    @ResponseBody
+    private ErrorMessage handleBadRequestException(CustomNotAuthorizedException e) {
+        log.error(HttpStatus.UNAUTHORIZED + ":" + e.getMessage());
         return new ErrorMessage(e.getMessage());
     }
 }

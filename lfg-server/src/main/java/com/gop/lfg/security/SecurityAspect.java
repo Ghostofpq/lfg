@@ -12,9 +12,6 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 
-/**
- * @author GhostOfPQ
- */
 @Slf4j
 @Aspect
 @Component("securityAspect")

@@ -5,7 +5,7 @@ import lombok.Data;
 import org.joda.time.DateTime;
 
 /**
- * Created by VMPX4526 on 26/03/2015.
+ * Created by GOP on 26/03/2015.
  */
 @Data
 @AllArgsConstructor

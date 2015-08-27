@@ -6,7 +6,6 @@ import com.gop.lfg.data.models.Token;
 import com.gop.lfg.data.models.User;
 import com.gop.lfg.data.repositories.TokenRepository;
 import com.gop.lfg.data.repositories.UserRepository;
-import com.gop.lfg.exceptions.ErrorMessage;
 import com.gop.lfg.security.CustomAuthenticationFilter;
 import com.gop.lfg.services.JwtService;
 import com.gop.lfg.utils.TokenRequest;
@@ -22,14 +21,16 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,6 +57,17 @@ public class TokenControllerIT {
     @PostConstruct
     private void init() {
         template = new TestRestTemplate();
+        template.setErrorHandler(new ResponseErrorHandler() {
+            @Override
+            public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+                return !clientHttpResponse.getStatusCode().is2xxSuccessful();
+            }
+
+            @Override
+            public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+                // Do nothing
+            }
+        });
         baseURI = "http://localhost:" + localPort;
         cleanDatabases();
     }
@@ -133,7 +145,7 @@ public class TokenControllerIT {
         final Token tokenInfo = getTokenResponse.getBody();
         assertEquals(tokenInfo.getId(), token.getId());
         assertEquals(tokenInfo.getAccessToken(), token.getAccessToken());
-        assertEquals(tokenInfo.getTokenRefresh(), token.getTokenRefresh());
+        assertEquals(tokenInfo.getRefreshToken(), token.getRefreshToken());
         assertEquals(tokenInfo.getIssuedAt(), token.getIssuedAt());
         assertEquals(tokenInfo.getExpiresAt(), token.getExpiresAt());
         assertEquals(tokenInfo.getUserId(), token.getUserId());
@@ -170,7 +182,6 @@ public class TokenControllerIT {
     public void expiredTokenForUser1ShouldNotGrantsAccessToHisData() throws Exception {
         logTestName("expiredTokenForUser1ShouldNotGrantsAccessToHisData");
 
-
         final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
 
         final ResponseEntity<EncodedToken> tokenCreationResponse = template
@@ -183,8 +194,39 @@ public class TokenControllerIT {
         final HttpHeaders headers = new HttpHeaders();
         headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
         final HttpEntity entity = new HttpEntity<>(headers);
-        final ResponseEntity<User> getUserResponse = template.exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, User.class);
-        assertEquals(HttpStatus.NOT_ACCEPTABLE, getUserResponse.getStatusCode());
+        final ResponseEntity<User> getUserResponse = template
+                .exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, User.class);
+        assertEquals(getUserResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(getUserResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final Token refreshedToken = jwtService
+                .decode(getUserResponse.getHeaders().getFirst(CustomAuthenticationFilter.HEADER_TOKEN));
+        assertEquals(refreshedToken.getId(), token.getId());
+        assertEquals(refreshedToken.getUserId(), token.getUserId());
+        assertEquals(refreshedToken.getRoles(), token.getRoles());
+        assertNotEquals(refreshedToken.getExpiresAt(), token.getExpiresAt());
+        assertNotEquals(refreshedToken.getAccessToken(), token.getAccessToken());
+        assertNotEquals(refreshedToken.getRefreshToken(), token.getRefreshToken());
+    }
+
+    @Test
+    public void expiredTokenForUser1WithInvalidRefreshNotGrantsAccessToHisData() throws Exception {
+        logTestName("expiredTokenForUser1ShouldNotGrantsAccessToHisData");
+
+        final TokenRequest tokenRequest = new TokenRequest(USER_1_LOGIN, USER_1_PASS, USER_1_TOKEN_NAME);
+
+        final ResponseEntity<EncodedToken> tokenCreationResponse = template
+                .postForEntity(baseURI + "/api/token/create", tokenRequest, EncodedToken.class);
+        assertEquals(tokenCreationResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(tokenCreationResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
+        final Token token = jwtService.decode(tokenCreationResponse.getBody().getValue());
+        token.setExpiresAt(DateTime.now().minusMinutes(1).getMillis());
+        token.setRefreshToken("invalid");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set(CustomAuthenticationFilter.HEADER_TOKEN, jwtService.encode(token).getValue());
+        final HttpEntity entity = new HttpEntity<>(headers);
+        final ResponseEntity<User> getUserResponse = template
+                .exchange(baseURI + "/api/user/me", HttpMethod.GET, entity, User.class);
+        assertEquals(HttpStatus.FORBIDDEN, getUserResponse.getStatusCode());
         assertEquals(getUserResponse.getHeaders().getContentType(), APPLICATION_JSON_UTF8);
     }
 
